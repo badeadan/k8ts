@@ -101,8 +101,7 @@ func openFile(name string) (*os.File, error) {
 	return os.Open(filePath)
 }
 
-func serviceInstall(args *MonitorArgs) error {
-	serviceUnit := `
+const serviceUnitTemplate string = `
 [Unit]
 Description=Preserve logs of Kubernetes pods and jobs
 Requires=kubelet.service
@@ -115,13 +114,15 @@ Restart=always
 [Install]
 WantedBy=default.target
 `
+
+func serviceInstall(args *MonitorArgs) error {
 	unitPath := filepath.Join(systemdUnitsPath, binaryName + ".service")
 	unitFile, err := os.OpenFile(unitPath, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Printf("Failed to open '%s'", unitPath)
 		return err
 	}
-	_, _ = fmt.Fprintf(unitFile, serviceUnit,
+	_, _ = fmt.Fprintf(unitFile, serviceUnitTemplate,
 		filepath.Join(remoteInstallPath, binaryName),
 		args.String())
 	cmd := exec.Command("systemctl", "daemon-reload")
