@@ -145,3 +145,6 @@ resulting binary size:
 ```
 make
 ```
+
+Or you can grab a binary from the releases page:
+https://github.com/badeadan/k8ts/releases
